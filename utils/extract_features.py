@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
+import argparse
 
 sys.path.append('../../python/')
 import caffe
@@ -84,45 +85,54 @@ class FeatureExtractor():
         return features
 
 
-def write_features_to_file(image_list, features, output_file):
+def write_features_to_file(image_list, features, batch_size, output_file):
+    vid_pool = 0
     with open(output_file, 'w') as opfd:
         for i, image_path in enumerate(image_list):
             image_feature = features[i].tolist()
             text_features = ','.join(map(str, image_feature))
-            opfd.write('%s,%s\n' % (image_list[i], text_features))
+            if not i % batch_size:
+                vid_pool += 1
+            opfd.write('%s_%s,%s\n' % (str(vid_pool), i, text_features))
 
 
-def compute_single_image_feature(feature_extractor, image_path, out_file):
+def compute_single_image_feature(feature_extractor, image_path, batch_size, out_file):
     assert os.path.exists(image_path)
     preprocessed_image = feature_extractor.preprocess_image(image_path)
     feature = feature_extractor.image_to_feature(preprocessed_image)
-    write_features_to_file([image_path], [feature], out_file)
+    write_features_to_file([image_path], [feature], batch_size, out_file)
 
 
-def compute_image_list_features(feature_extractor, images_file_path, out_file):
+def compute_image_list_features(feature_extractor, images_file_path, batch_size, out_file):
     assert os.path.exists(images_file_path)
     with open(images_file_path, 'r') as infd:
         image_list = infd.read().splitlines()
     features = feature_extractor.compute_features(image_list)
-    write_features_to_file(image_list, features, out_file)
+    write_features_to_file(image_list, features, batch_size, out_file)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-l", "--imagelist", type=str, help='list of images (one per line)')
+    parser.add_argument("-o", "--output", type=str, help='output features file')
+    parser.add_argument("-b", "--batchsize", type=int, help='size of batch')
+    args = parser.parse_args()
+
     BASE_DIR = ''
-    IMAGE_LIST_FILE = 'images_paths_list.txt'  # List of images 1 image path per line.
-    IMAGE_PATH = '../images/cat.jpg'
-    OUTPUT_FILE = 'output_features.csv'
-    BATCH_SIZE = 10
+    IMAGE_LIST_FILE = args.imagelist if args.imagelist else 'images_paths_list.txt'
+    # IMAGE_PATH = '../images/cat.jpg'
+    OUTPUT_FILE = args.output if args.output else 'output_features.csv'
+    BATCH_SIZE = args.batchsize if args.batchsize else 10
 
     # NOTE: Download these files from the Caffe Model Zoo.
-    IMAGE_NET_FILE = '../../models/vgg/vgg_orig_16layer.deploy.prototxt'
-    MODEL_FILE = BASE_DIR + 'Nets/vgg/VGG_ILSVRC_16_layers.caffemodel'
+    IMAGE_NET_FILE = 'data/vgg_orig_16layer.deploy.prototxt'
+    MODEL_FILE = BASE_DIR + 'data/VGG_ILSVRC_16_layers.caffemodel'
     DEVICE_ID = 0
     feature_extractor = FeatureExtractor(MODEL_FILE, IMAGE_NET_FILE, DEVICE_ID)
     feature_extractor.set_image_batch_size(BATCH_SIZE)
 
     # compute features for a list of images in a file
-    compute_image_list_features(feature_extractor, IMAGE_LIST_FILE, OUTPUT_FILE)
+    compute_image_list_features(feature_extractor, IMAGE_LIST_FILE, BATCH_SIZE, OUTPUT_FILE)
     # compute features for a single image
     # feature_extractor.set_image_batch_size(1)
     # compute_single_image_feature(feature_extractor, IMAGE_PATH, OUTPUT_FILE)

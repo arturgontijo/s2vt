@@ -88,7 +88,7 @@ class fc7FrameSequenceGenerator(SequenceGenerator):
         return self.num_resets > 0
 
     def init_vocabulary(self, vocab_filename):
-        print("Initializing the vocabulary: ", vocab_filename)
+        print("Initializing the vocabulary: " + vocab_filename)
         if os.path.isfile(vocab_filename):
             with open(vocab_filename, 'rb') as vocab_file:
                 self.init_vocab_from_file(vocab_file)

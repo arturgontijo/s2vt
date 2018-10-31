@@ -559,7 +559,6 @@ def main():
     parser.add_argument("-f", "--frames", type=str, help='frames path')
     args = parser.parse_args()
 
-    # TODO: Input the snapshot directory, vocab path, frames (and sents) path
     snap_dir = args.snapshots if args.snapshots else './snapshots'
     vocab_file = args.vocab if args.vocab else './data/yt_coco_mvad_mpiimd_vocabulary.txt'
     frame_feat_file = args.frames if args.frames else './data/yt_allframes_vgg_fc7_{0}.txt'
