@@ -4,7 +4,7 @@ DEVICE_ID = 0
 
 from collections import OrderedDict
 import argparse
-import cPickle as pickle
+import pickle
 import h5py
 import math
 import matplotlib.pyplot as plt
@@ -554,11 +554,11 @@ def main():
                         help='output sentences as html to visually compare')
     parser.add_argument("-g", "--gold", action='store_true',
                         help='groundtruth sentences for scoring/retrieval')
-    parser.add_argument("-s", "--snapshots", action='store_true',
+    parser.add_argument("-s", "--snapshots", type=str, action='store_true',
                         help='the snapshot directory')
-    parser.add_argument("-vc", "--vocab", action='store_true',
+    parser.add_argument("-vc", "--vocab", type=str, action='store_true',
                         help='vocabulary path')
-    parser.add_argument("-f", "--frames", action='store_true',
+    parser.add_argument("-f", "--frames", type=str, action='store_true',
                         help='frames path')
     args = parser.parse_args()
 
