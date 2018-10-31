@@ -554,12 +554,9 @@ def main():
                         help='output sentences as html to visually compare')
     parser.add_argument("-g", "--gold", action='store_true',
                         help='groundtruth sentences for scoring/retrieval')
-    parser.add_argument("-s", "--snapshots", type=str, action='store_true',
-                        help='the snapshot directory')
-    parser.add_argument("-vc", "--vocab", type=str, action='store_true',
-                        help='vocabulary path')
-    parser.add_argument("-f", "--frames", type=str, action='store_true',
-                        help='frames path')
+    parser.add_argument("-s", "--snapshots", type=str, help='the snapshot directory')
+    parser.add_argument("-vc", "--vocab", type=str, help='vocabulary path')
+    parser.add_argument("-f", "--frames", type=str, help='frames path')
     args = parser.parse_args()
 
     # TODO: Input the snapshot directory, vocab path, frames (and sents) path
