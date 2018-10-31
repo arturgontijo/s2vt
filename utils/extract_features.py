@@ -116,7 +116,7 @@ def main():
     parser.add_argument("-l", "--imagelist", type=str, help='list of images (one per line)')
     parser.add_argument("-o", "--output", type=str, help='output features file')
     parser.add_argument("-b", "--batchsize", type=int, help='size of batch')
-    parser.add_argument("-n", "--vgg", type=int, help='size of batch')
+    parser.add_argument("-n", "--net", type=int, help='size of batch')
     args = parser.parse_args()
 
     BASE_DIR = ''
@@ -126,15 +126,18 @@ def main():
     BATCH_SIZE = args.batchsize if args.batchsize else 10
 
     # NOTE: Download these files from the Caffe Model Zoo.
-    vgg_layer = args.vgg if args.vgg else 16
+    net_layer = args.net if args.net else 16
     IMAGE_NET_FILE = 'data/vgg_orig_16layer.deploy.prototxt'
     MODEL_FILE = BASE_DIR + 'data/VGG_ILSVRC_16_layers.caffemodel'
-    if vgg_layer == 19:
+    if net_layer == 19:
         IMAGE_NET_FILE = 'data/vgg_orig_19layer.deploy.prototxt'
         MODEL_FILE = BASE_DIR + 'data/VGG_ILSVRC_19_layers.caffemodel'
-    elif vgg_layer == 1:
+    elif net_layer == 1:
         IMAGE_NET_FILE = 'data/vgg16_low_noise.prototxt'
         MODEL_FILE = BASE_DIR + 'data/VGG16_SOD_finetune.caffemodel'
+    elif net_layer == 152:
+        IMAGE_NET_FILE = 'data/ResNet-152-deploy.prototxt'
+        MODEL_FILE = BASE_DIR + 'data/ResNet-152-model.caffemodel'
 
     DEVICE_ID = 0
     feature_extractor = FeatureExtractor(MODEL_FILE, IMAGE_NET_FILE, DEVICE_ID)
