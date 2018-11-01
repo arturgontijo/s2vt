@@ -544,6 +544,76 @@ def print_top_samples(vocab, samples, out_filename=None):
     print('Wrote top samples to:', out_filename)
 
 
+def get_captions(modelname, features_file, htmlout):
+    try:
+        snap_dir = './snapshots'
+        vocab_file = './data/yt_coco_mvad_mpiimd_vocabulary.txt'
+        lstm_net_file = './s2vt.words_to_preds.deploy.prototxt'
+        results_dir = './results'
+        model_file = '%s/%s.caffemodel' % (snap_dir, modelname)
+        sents_file = None
+
+        caffe.set_mode_gpu()
+        caffe.set_device(DEVICE_ID)
+        lstm_net = caffe.Net(lstm_net_file, model_file, caffe.TEST)
+
+        strategies = [{'type': 'beam', 'beam_size': 1},]
+        num_out_per_chunk = 30
+        start_chunk = 0
+
+        file_names = [(features_file, sents_file)]
+        fsg = fc7FrameSequenceGenerator(file_names,
+                                        BUFFER_SIZE,
+                                        vocab_file,
+                                        max_words=MAX_WORDS,
+                                        align=False,
+                                        shuffle=False,
+                                        pad=False,
+                                        truncate=False)
+        video_gt_pairs = all_video_gt_pairs(fsg)
+        print('Read %d videos pool feats' % len(fsg.vid_framefeats))
+        num_chunks = (len(fsg.vid_framefeats) / num_out_per_chunk) + 1
+        eos_string = '<EOS>'
+        # add english inverted vocab
+        vocab_list = [eos_string] + fsg.vocabulary_inverted
+        offset = 0
+        for c in range(start_chunk, int(num_chunks)):
+            chunk_start = c * num_out_per_chunk
+            chunk_end = (c + 1) * num_out_per_chunk
+            chunk = video_gt_pairs.keys()[chunk_start:chunk_end]
+            html_out_filename = "final_result.html"
+            text_out_filename = "final_result.txt"
+            if not os.path.exists(results_dir):
+                os.makedirs(results_dir)
+            outputs = run_pred_iters(lstm_net,
+                                     chunk,
+                                     video_gt_pairs,
+                                     fsg,
+                                     strategies=strategies,
+                                     display_vocab=vocab_list)
+            if htmlout:
+                html_out = to_html_output(outputs, vocab_list)
+                html_out_file = open(html_out_filename, 'w')
+                html_out_file.write(html_out)
+                html_out_file.close()
+            text_out_types = to_text_output(outputs, vocab_list)
+            text_out_fname = ""
+            for strat_type in text_out_types:
+                text_out_fname = text_out_filename + strat_type + '.txt'
+                text_out_file = open(text_out_fname, 'a')
+                text_out_file.write(''.join(text_out_types[strat_type]))
+                text_out_file.close()
+            offset += num_out_per_chunk
+            print('(%d-%d) Appending to file: %s' % (
+                chunk_start,
+                chunk_end,
+                text_out_fname))
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--modelname", type=str, required=True,

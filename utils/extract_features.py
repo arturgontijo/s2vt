@@ -111,6 +111,17 @@ def compute_image_list_features(feature_extractor, images_file_path, batch_size,
     write_features_to_file(image_list, features, batch_size, out_file)
 
 
+def extractor(model_file, net_file, img_list, output_file, batch_size):
+    try:
+        feature_extractor = FeatureExtractor(model_file, net_file, 0)
+        feature_extractor.set_image_batch_size(batch_size)
+        compute_image_list_features(feature_extractor, img_list, batch_size, output_file)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--imagelist", type=str, help='list of images (one per line)')
