@@ -542,6 +542,12 @@ def print_top_samples(vocab, samples, out_filename=None):
     print('Wrote top samples to:', out_filename)
 
 
+def merge_two_dicts(x, y):
+    z = x.copy()
+    z.update(y)
+    return OrderedDict(z)
+
+
 def get_captions(model_name, features_file, output_path, html_flag=False):
     try:
         snap_dir = './utils/snapshots'
@@ -577,32 +583,36 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
         text_out_filename = "{}.txt".format(output_path)
         if os.path.exists(text_out_filename):
             os.remove(text_out_filename)
+        outputs_list = []
         offset = 0
         for c in range(start_chunk, int(num_chunks)):
             chunk_start = c * num_out_per_chunk
             chunk_end = (c + 1) * num_out_per_chunk
             chunk = video_gt_pairs.keys()[chunk_start:chunk_end]
-            outputs = run_pred_iters(lstm_net,
-                                     chunk,
-                                     video_gt_pairs,
-                                     fsg,
-                                     strategies=strategies,
-                                     display_vocab=vocab_list)
-            if html_flag:
-                html_out = to_html_output(outputs, vocab_list)
-                html_out_file = open(html_out_filename, 'w')
-                html_out_file.write(html_out)
-                html_out_file.close()
-            text_out_types = to_text_output(outputs, vocab_list)
-            for strat_type in text_out_types:
-                text_out_file = open(text_out_filename, 'a')
-                text_out_file.write(''.join(text_out_types[strat_type]))
-                text_out_file.close()
-            offset += num_out_per_chunk
-            print('(%d-%d) Writing result to file: %s' % (
+            outputs_list.append(run_pred_iters(lstm_net,
+                                               chunk,
+                                               video_gt_pairs,
+                                               fsg,
+                                               strategies=strategies,
+                                               display_vocab=vocab_list))
+            print('(%d-%d) Processing result...' % (
                 chunk_start,
-                chunk_end,
-                text_out_filename))
+                chunk_end))
+            offset += num_out_per_chunk
+
+        final_output = {}
+        for idx, outputs in enumerate(outputs_list):
+            final_output = merge_two_dicts(final_output, outputs)
+        if html_flag:
+            html_out = to_html_output(final_output, vocab_list)
+            html_out_file = open(html_out_filename, 'w')
+            html_out_file.write(html_out)
+            html_out_file.close()
+        text_out_types = to_text_output(final_output, vocab_list)
+        for strat_type in text_out_types:
+            text_out_file = open(text_out_filename, 'a')
+            text_out_file.write(''.join(text_out_types[strat_type]))
+            text_out_file.close()
         return True
     except Exception as e:
         print(e)
