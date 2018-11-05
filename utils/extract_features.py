@@ -35,7 +35,7 @@ class FeatureExtractor():
         self.image_net.blobs['data'].reshape(batch_size,
                                              *self.image_net.blobs['data'].data.shape[1:])
 
-    def preprocess_image(self, image, verbose=False):
+    def preprocess_image(self, image):
         if type(image) in (str, unicode):
             image = plt.imread(image)
         crop_edge_ratio = (256. - 224.) / 256. / 2
@@ -45,11 +45,10 @@ class FeatureExtractor():
         if len(cropped_image.shape) == 2:
             cropped_image = np.tile(cropped_image[:, :, np.newaxis], (1, 1, 3))
         preprocessed_image = self.transformer.preprocess('data', cropped_image)
-        if verbose:
-            print('Preprocessed image has shape %s, range (%f, %f)' % (
-                preprocessed_image.shape,
-                preprocessed_image.min(),
-                preprocessed_image.max()))
+        print('Preprocessed image has shape %s, range (%f, %f)' % (
+            preprocessed_image.shape,
+            preprocessed_image.min(),
+            preprocessed_image.max()))
         return preprocessed_image
 
     def image_to_feature(self, image, output_name='fc7'):
@@ -67,8 +66,7 @@ class FeatureExtractor():
         batch = np.zeros_like(self.image_net.blobs['data'].data)
         batch_shape = batch.shape
         batch_size = batch_shape[0]
-        features_shape = (len(image_list),) + \
-                         self.image_net.blobs[output_name].data.shape[1:]
+        features_shape = (len(image_list),) + self.image_net.blobs[output_name].data.shape[1:]
         features = np.zeros(features_shape)
         for batch_start_index in range(0, len(image_list), batch_size):
             batch_list = image_list[batch_start_index:(batch_start_index + batch_size)]
