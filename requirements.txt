@@ -1,0 +1,4 @@
+pytube
+opencv-python
+h5py
+matplotlib

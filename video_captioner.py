@@ -27,21 +27,21 @@ def download_yt_video(url, video_folder, video_name):
 def main():
     url = 'https://www.youtube.com/watch?v=GwowU444Ky8'
     video_name = 'civic'
-    video_folder = './videos/{}'.format(video_name)
-    if not os.path.exists('./videos'):
-        os.makedirs('./videos')
+    video_folder = './utils/videos/{}'.format(video_name)
+    if not os.path.exists('./utils/videos'):
+        os.makedirs('./utils/videos')
     if not os.path.exists(video_folder):
         os.makedirs(video_folder)
     ok, video_path = download_yt_video(url, video_folder, video_name)
     if ok:
         start_time = 427
         stop_time = 437
-        ok, frames_list = get_video_frames(video_path, video_name, start_time*1000, stop_time*1000)
+        ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000)
         if ok:
-            features_file = './{}/output_{}.csv'.format(video_name, video_name)
+            features_file = '{}/output_{}.csv'.format(video_folder, video_name)
             batch_size = 10
-            if extractor('data/VGG_ILSVRC_16_layers.caffemodel',
-                         'data/vgg_orig_16layer.deploy.prototxt',
+            if extractor('utils/data/VGG_ILSVRC_16_layers.caffemodel',
+                         'utils/data/vgg_orig_16layer.deploy.prototxt',
                          frames_list,
                          features_file,
                          batch_size):

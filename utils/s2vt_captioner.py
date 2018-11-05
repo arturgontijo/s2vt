@@ -546,10 +546,10 @@ def print_top_samples(vocab, samples, out_filename=None):
 
 def get_captions(model_name, features_file, output_path, html_flag=False):
     try:
-        snap_dir = './snapshots'
-        vocab_file = './data/yt_coco_mvad_mpiimd_vocabulary.txt'
-        lstm_net_file = './s2vt.words_to_preds.deploy.prototxt'
-        results_dir = './results'
+        snap_dir = './utils/snapshots'
+        vocab_file = './utils/data/yt_coco_mvad_mpiimd_vocabulary.txt'
+        lstm_net_file = './utils/s2vt.words_to_preds.deploy.prototxt'
+        results_dir = './utils/results'
         model_file = '%s/%s.caffemodel' % (snap_dir, model_name)
         sents_file = None
 
@@ -557,7 +557,7 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
         caffe.set_device(DEVICE_ID)
         lstm_net = caffe.Net(lstm_net_file, model_file, caffe.TEST)
 
-        strategies = [{'type': 'beam', 'beam_size': 1},]
+        strategies = [{'type': 'beam', 'beam_size': 1}, ]
         num_out_per_chunk = 30
         start_chunk = 0
 
