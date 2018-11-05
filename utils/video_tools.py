@@ -1,4 +1,8 @@
+import logging
 import cv2
+
+logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
+log = logging.getLogger("video_tools")
 
 
 def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms):
@@ -15,7 +19,7 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms):
             if not ok:
                 break
             frame_path = '{}/frame_{:03}.jpg'.format(frames_path, current_frame)
-            print 'Storing ' + frame_path
+            log.debug('Storing ' + frame_path)
             cv2.imwrite(frame_path, frame)
             frames_list.append(frame_path)
             current_frame += 1

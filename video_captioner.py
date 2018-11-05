@@ -7,7 +7,7 @@ from utils.s2vt_captioner import get_captions
 from utils.video_tools import get_video_frames
 
 logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s - %(message)s")
-log = logging.getLogger("run_video_cap_service")
+log = logging.getLogger("video_cap_service")
 
 
 def download_yt_video(url, video_folder, video_name):
@@ -17,7 +17,7 @@ def download_yt_video(url, video_folder, video_name):
             file_extension='mp4').order_by('resolution').desc().first().download(
             output_path=video_folder,
             filename=video_name)
-        log.info("Video stored at: ", video_path)
+        log.debug("Video stored at: ", video_path)
         return True, video_path
     except Exception as e:
         print(e)
