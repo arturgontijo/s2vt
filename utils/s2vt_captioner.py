@@ -581,6 +581,8 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
             chunk = video_gt_pairs.keys()[chunk_start:chunk_end]
             html_out_filename = "{}.html".format(output_path)
             text_out_filename = "{}.txt".format(output_path)
+            if os.path.exists(text_out_filename):
+                os.remove(text_out_filename)
             if not os.path.exists(results_dir):
                 os.makedirs(results_dir)
             outputs = run_pred_iters(lstm_net,
@@ -595,17 +597,15 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
                 html_out_file.write(html_out)
                 html_out_file.close()
             text_out_types = to_text_output(outputs, vocab_list)
-            text_out_fname = ""
             for strat_type in text_out_types:
-                text_out_fname = text_out_filename + strat_type + '.txt'
-                text_out_file = open(text_out_fname, 'w')
+                text_out_file = open(text_out_filename, 'a')
                 text_out_file.write(''.join(text_out_types[strat_type]))
                 text_out_file.close()
             offset += num_out_per_chunk
             print('(%d-%d) Writing result to file: %s' % (
                 chunk_start,
                 chunk_end,
-                text_out_fname))
+                text_out_filename))
         return True
     except Exception as e:
         print(e)
