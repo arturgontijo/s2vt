@@ -28,7 +28,8 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
          video_name='civic',
          start_time=457,
          stop_time=467,
-         pace=1000):
+         pace=1000,
+         batch_size=10):
     video_folder = './utils/videos/{}'.format(video_name)
     if not os.path.exists('./utils/videos'):
         os.makedirs('./utils/videos')
@@ -39,7 +40,6 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
         ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000, pace)
         if ok:
             features_file = '{}/output_{}.csv'.format(video_folder, video_name)
-            batch_size = 10
             if extractor('utils/data/VGG_ILSVRC_16_layers.caffemodel',
                          'utils/data/vgg_orig_16layer.deploy.prototxt',
                          frames_list,
@@ -57,7 +57,8 @@ if __name__ == "__main__":
     i_start_time = raw_input("Start T : ")
     i_stop_time = raw_input("Stop T  : ")
     i_pace = raw_input("Pace(ms): ")
+    i_batch_size = raw_input("BatchSize: ")
     if "" not in [i_url, i_video_name, i_start_time, i_stop_time]:
-        main(i_url, i_video_name, int(i_start_time), int(i_stop_time), int(i_pace))
+        main(i_url, i_video_name, int(i_start_time), int(i_stop_time), int(i_pace), int(i_batch_size))
     else:
         main()
