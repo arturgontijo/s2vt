@@ -545,7 +545,7 @@ def print_top_samples(vocab, samples, out_filename=None):
 def merge_two_dicts(x, y):
     z = x.copy()
     z.update(y)
-    return OrderedDict(z)
+    return OrderedDict(sorted(z.items()))
 
 
 def get_captions(model_name, features_file, output_path, html_flag=False):
