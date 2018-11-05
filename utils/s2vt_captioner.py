@@ -187,26 +187,30 @@ def predict_image_caption_beam_search(net, pad_img_feature, vocab_list, strategy
     return beams, beam_probs
 
 
-def run_pred_iter(net, pad_image_feature, vocab_list, strategies=[{'type': 'beam'}]):
+def run_pred_iter(net, pad_image_feature, vocab_list, strategies=None):
+    if strategies is None:
+        strategies = [{'type': 'beam'}]
     outputs = []
     for strategy in strategies:
         captions, probs = predict_image_caption(net, pad_image_feature, vocab_list, strategy=strategy)
         for caption, prob in zip(captions, probs):
-            output = {}
-            output['caption'] = caption
-            output['prob'] = prob
-            output['gt'] = False
-            output['source'] = strategy
+            output = {
+                'caption': caption,
+                'prob': prob,
+                'gt': False,
+                'source': strategy
+            }
             outputs.append(output)
     return outputs
 
 
 def score_caption(net, image, caption, is_gt=True, caption_source='gt'):
-    output = {}
-    output['caption'] = caption
-    output['gt'] = is_gt
-    output['source'] = caption_source
-    output['prob'] = []
+    output = {
+        'caption': caption,
+        'gt': is_gt,
+        'source': caption_source,
+        'prob': []
+    }
     probs = predict_single_word(net, image, 0)
     for word in caption:
         output['prob'].append(probs[word])
@@ -242,9 +246,10 @@ def all_video_gt_pairs(fsg):
 
 
 def gen_stats(prob, normalizer=None):
-    stats = {}
-    stats['length'] = len(prob)
-    stats['log_p'] = 0.0
+    stats = {
+        'length': len(prob),
+        'log_p': 0.0
+    }
     eps = 1e-12
     for p in prob:
         assert 0.0 <= p <= 1.0
@@ -267,8 +272,7 @@ def gen_stats(prob, normalizer=None):
     return stats
 
 
-def run_pred_iters(pred_net, vidids, video_gt_pairs, fsg,
-                   strategies=None, display_vocab=None):
+def run_pred_iters(pred_net, vidids, video_gt_pairs, fsg, strategies=None, display_vocab=None):
     if strategies is None:
         strategies = [{'type': 'beam'}]
     outputs = OrderedDict()
@@ -340,7 +344,7 @@ def to_html_output(outputs, vocab):
     out = ''
     for video_id, captions in outputs.iteritems():
         for c in captions:
-            if not 'stats' in c:
+            if 'stats' not in c:
                 c['stats'] = gen_stats(c['prob'])
         # Sort captions by log probability.
         if 'normed_perplex' in captions[0]['stats']:
@@ -384,8 +388,7 @@ def to_text_output(outputs, vocab):
     out_types = {}
     caps = outputs[outputs.keys()[0]]
     for c in caps:
-        caption, gt, source = \
-            c['caption'], c['gt'], c['source']
+        caption, gt, source = c['caption'], c['gt'], c['source']
         if source['type'] == 'beam':
             source_meta = 'beam_size_%d' % source['beam_size']
         elif source['type'] == 'sample':
@@ -395,11 +398,11 @@ def to_text_output(outputs, vocab):
         if source_meta not in out_types:
             out_types[source_meta] = []
     num_videos = 0
-    out = ''
+    outputs = sorted(outputs)
     for video_id, captions in outputs.iteritems():
         num_videos += 1
         for c in captions:
-            if not 'stats' in c:
+            if 'stats' not in c:
                 c['stats'] = gen_stats(c['prob'])
         # Sort captions by log probability.
         if 'normed_perplex' in captions[0]['stats']:
@@ -407,11 +410,11 @@ def to_text_output(outputs, vocab):
         else:
             captions.sort(key=lambda c: -c['stats']['log_p_word'])
         for c in captions:
-            caption, gt, source, stats = \
-                c['caption'], c['gt'], c['source'], c['stats']
+            caption, gt, source, stats = c['caption'], c['gt'], c['source'], c['stats']
             caption_string = vocab_inds_to_sentence(vocab, caption)
             source_meta = 'beam_size_%d' % source['beam_size']
-            out = '%s\t%s\t%s\n' % (source_meta, video_id, caption_string)
+            # out = '%s\t%s\t%s\n' % (source_meta, video_id, caption_string)
+            out = '%s\t%s\n' % (video_id, caption_string)
             # if len(out_types[source_meta]) < num_videos:
             out_types[source_meta].append(out)
     return out_types
