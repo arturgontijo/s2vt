@@ -5,12 +5,8 @@ DEVICE_ID = 0
 from collections import OrderedDict
 import argparse
 import pickle
-import h5py
 import math
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import random
+from collections import OrderedDict
 import sys
 
 sys.path.append('../../python/')
@@ -398,7 +394,7 @@ def to_text_output(outputs, vocab):
         if source_meta not in out_types:
             out_types[source_meta] = []
     num_videos = 0
-    outputs = sorted(outputs)
+    outputs = OrderedDict(sorted(outputs.items()))
     for video_id, captions in outputs.iteritems():
         num_videos += 1
         for c in captions:
