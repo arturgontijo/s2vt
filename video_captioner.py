@@ -24,7 +24,10 @@ def download_yt_video(url, video_folder, video_name):
         return False, 'Fail!'
 
 
-def main(url='https://www.youtube.com/watch?v=GwowU444Ky8', video_name='civic'):
+def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
+         video_name='civic',
+         start_time=457,
+         stop_time=467):
     video_folder = './utils/videos/{}'.format(video_name)
     if not os.path.exists('./utils/videos'):
         os.makedirs('./utils/videos')
@@ -32,8 +35,6 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8', video_name='civic'):
         os.makedirs(video_folder)
     ok, video_path = download_yt_video(url, video_folder, video_name)
     if ok:
-        start_time = 457
-        stop_time = 467
         ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000)
         if ok:
             features_file = '{}/output_{}.csv'.format(video_folder, video_name)
@@ -50,9 +51,11 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8', video_name='civic'):
 
 
 if __name__ == "__main__":
-    input_url = raw_input("URL     : ")
-    input_video_name = raw_input("VID Name: ")
-    if input_url and input_video_name:
-        main(input_url, input_video_name)
+    i_url = raw_input("URL     : ")
+    i_video_name = raw_input("VID Name: ")
+    i_start_time = raw_input("Start T : ")
+    i_stop_time = raw_input("Stop T  : ")
+    if "" not in [i_url, i_video_name, i_start_time, i_stop_time]:
+        main(i_url, i_video_name, int(i_start_time), int(i_stop_time))
     else:
         main()
