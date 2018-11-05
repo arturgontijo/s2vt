@@ -52,11 +52,11 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
 
 
 if __name__ == "__main__":
-    i_url = raw_input("URL     : ")
-    i_video_name = raw_input("VID Name: ")
-    i_start_time = raw_input("Start T : ")
-    i_stop_time = raw_input("Stop T  : ")
-    i_pace = raw_input("Pace(ms): ")
+    i_url = raw_input("   URL   : ")
+    i_video_name = raw_input("VID Name : ")
+    i_start_time = raw_input("StartTime: ")
+    i_stop_time = raw_input("StopTime : ")
+    i_pace = raw_input("Pace(ms) : ")
     i_batch_size = raw_input("BatchSize: ")
     if "" not in [i_url, i_video_name, i_start_time, i_stop_time]:
         main(i_url, i_video_name, int(i_start_time), int(i_stop_time), int(i_pace), int(i_batch_size))

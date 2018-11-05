@@ -6,7 +6,6 @@ from collections import OrderedDict
 import argparse
 import pickle
 import math
-from collections import OrderedDict
 import sys
 
 sys.path.append('../../python/')
@@ -394,7 +393,7 @@ def to_text_output(outputs, vocab):
         if source_meta not in out_types:
             out_types[source_meta] = []
     num_videos = 0
-    outputs = OrderedDict(sorted(outputs.items()))
+    outputs = OrderedDict(sorted(outputs.items(), key=lambda (key, value): int(key)))
     for video_id, captions in outputs.iteritems():
         num_videos += 1
         for c in captions:
@@ -599,11 +598,11 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
             text_out_fname = ""
             for strat_type in text_out_types:
                 text_out_fname = text_out_filename + strat_type + '.txt'
-                text_out_file = open(text_out_fname, 'a')
+                text_out_file = open(text_out_fname, 'w')
                 text_out_file.write(''.join(text_out_types[strat_type]))
                 text_out_file.close()
             offset += num_out_per_chunk
-            print('(%d-%d) Appending to file: %s' % (
+            print('(%d-%d) Writing result to file: %s' % (
                 chunk_start,
                 chunk_end,
                 text_out_fname))
