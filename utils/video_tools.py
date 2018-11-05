@@ -11,6 +11,12 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms, pace)
         # Set video to start position
         cap.set(cv2.CAP_PROP_POS_MSEC, start_time_ms)
 
+        # If stop_time_ms == 0, get the entire video
+        if stop_time_ms == 0:
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            stop_time_ms = int(frame_count/fps)*1000
+
         frames_list = []
         ok = True
         current_frame = 1
