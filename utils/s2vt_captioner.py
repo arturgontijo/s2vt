@@ -547,7 +547,6 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
         snap_dir = './utils/snapshots'
         vocab_file = './utils/data/yt_coco_mvad_mpiimd_vocabulary.txt'
         lstm_net_file = './utils/s2vt.words_to_preds.deploy.prototxt'
-        results_dir = './utils/results'
         model_file = '%s/%s.caffemodel' % (snap_dir, model_name)
         sents_file = None
 
@@ -555,7 +554,7 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
         caffe.set_device(DEVICE_ID)
         lstm_net = caffe.Net(lstm_net_file, model_file, caffe.TEST)
 
-        strategies = [{'type': 'beam', 'beam_size': 1}, ]
+        strategies = [{'type': 'beam', 'beam_size': 1}]
         num_out_per_chunk = 30
         start_chunk = 0
 
@@ -574,17 +573,15 @@ def get_captions(model_name, features_file, output_path, html_flag=False):
         eos_string = '<EOS>'
         # add english inverted vocab
         vocab_list = [eos_string] + fsg.vocabulary_inverted
+        html_out_filename = "{}.html".format(output_path)
+        text_out_filename = "{}.txt".format(output_path)
+        if os.path.exists(text_out_filename):
+            os.remove(text_out_filename)
         offset = 0
         for c in range(start_chunk, int(num_chunks)):
             chunk_start = c * num_out_per_chunk
             chunk_end = (c + 1) * num_out_per_chunk
             chunk = video_gt_pairs.keys()[chunk_start:chunk_end]
-            html_out_filename = "{}.html".format(output_path)
-            text_out_filename = "{}.txt".format(output_path)
-            if os.path.exists(text_out_filename):
-                os.remove(text_out_filename)
-            if not os.path.exists(results_dir):
-                os.makedirs(results_dir)
             outputs = run_pred_iters(lstm_net,
                                      chunk,
                                      video_gt_pairs,
