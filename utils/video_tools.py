@@ -19,7 +19,7 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms):
             if not ok:
                 break
             frame_path = '{}/frame_{:03}.jpg'.format(frames_path, current_frame)
-            log.debug('Storing ' + frame_path)
+            log.debug('Storing: {}'.format(frame_path))
             cv2.imwrite(frame_path, frame)
             frames_list.append(frame_path)
             current_frame += 1

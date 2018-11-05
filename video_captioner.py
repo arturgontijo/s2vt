@@ -17,16 +17,14 @@ def download_yt_video(url, video_folder, video_name):
             file_extension='mp4').order_by('resolution').desc().first().download(
             output_path=video_folder,
             filename=video_name)
-        log.debug("Video stored at: ", video_path)
+        log.debug("Video stored at: {}".format(video_path))
         return True, video_path
     except Exception as e:
         print(e)
         return False, 'Fail!'
 
 
-def main():
-    url = 'https://www.youtube.com/watch?v=GwowU444Ky8'
-    video_name = 'civic'
+def main(url='https://www.youtube.com/watch?v=GwowU444Ky8', video_name='civic'):
     video_folder = './utils/videos/{}'.format(video_name)
     if not os.path.exists('./utils/videos'):
         os.makedirs('./utils/videos')
@@ -52,4 +50,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    input_url = raw_input("URL     : ")
+    input_video_name = raw_input("VID Name: ")
+    if input_url and input_video_name:
+        main(input_url, input_video_name)
+    else:
+        main()
