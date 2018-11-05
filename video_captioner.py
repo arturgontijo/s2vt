@@ -34,8 +34,8 @@ def main():
         os.makedirs(video_folder)
     ok, video_path = download_yt_video(url, video_folder, video_name)
     if ok:
-        start_time = 427
-        stop_time = 437
+        start_time = 457
+        stop_time = 467
         ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000)
         if ok:
             features_file = '{}/output_{}.csv'.format(video_folder, video_name)
