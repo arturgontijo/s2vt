@@ -5,7 +5,7 @@ logging.basicConfig(level=10, format="%(asctime)s - [%(levelname)8s] - %(name)s 
 log = logging.getLogger("video_tools")
 
 
-def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms):
+def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms, pace):
     try:
         cap = cv2.VideoCapture(video_path)
         # Set video to start position
@@ -24,7 +24,7 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms):
             frames_list.append(frame_path)
             current_frame += 1
             # FPS = 1
-            cap.set(cv2.CAP_PROP_POS_MSEC, cap.get(cv2.CAP_PROP_POS_MSEC) + 1000)
+            cap.set(cv2.CAP_PROP_POS_MSEC, cap.get(cv2.CAP_PROP_POS_MSEC) + pace)
 
         cap.release()
         cv2.destroyAllWindows()

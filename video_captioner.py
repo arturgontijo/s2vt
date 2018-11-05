@@ -27,7 +27,8 @@ def download_yt_video(url, video_folder, video_name):
 def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
          video_name='civic',
          start_time=457,
-         stop_time=467):
+         stop_time=467,
+         pace=1000):
     video_folder = './utils/videos/{}'.format(video_name)
     if not os.path.exists('./utils/videos'):
         os.makedirs('./utils/videos')
@@ -35,7 +36,7 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
         os.makedirs(video_folder)
     ok, video_path = download_yt_video(url, video_folder, video_name)
     if ok:
-        ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000)
+        ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000, pace)
         if ok:
             features_file = '{}/output_{}.csv'.format(video_folder, video_name)
             batch_size = 10
@@ -55,7 +56,8 @@ if __name__ == "__main__":
     i_video_name = raw_input("VID Name: ")
     i_start_time = raw_input("Start T : ")
     i_stop_time = raw_input("Stop T  : ")
+    i_pace = raw_input("Pace(ms): ")
     if "" not in [i_url, i_video_name, i_start_time, i_stop_time]:
-        main(i_url, i_video_name, int(i_start_time), int(i_stop_time))
+        main(i_url, i_video_name, int(i_start_time), int(i_stop_time), int(i_pace))
     else:
         main()
