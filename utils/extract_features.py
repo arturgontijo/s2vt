@@ -103,10 +103,15 @@ def compute_single_image_feature(feature_extractor, image_path, batch_size, out_
     write_features_to_file([image_path], [feature], batch_size, out_file)
 
 
-def compute_image_list_features(feature_extractor, images_file_path, batch_size, out_file):
+def compute_image_list_features_from_path(feature_extractor, images_file_path, batch_size, out_file):
     assert os.path.exists(images_file_path)
     with open(images_file_path, 'r') as infd:
         image_list = infd.read().splitlines()
+    features = feature_extractor.compute_features(image_list)
+    write_features_to_file(image_list, features, batch_size, out_file)
+
+
+def compute_image_list_features(feature_extractor, image_list, batch_size, out_file):
     features = feature_extractor.compute_features(image_list)
     write_features_to_file(image_list, features, batch_size, out_file)
 
@@ -155,7 +160,7 @@ def main():
     feature_extractor.set_image_batch_size(BATCH_SIZE)
 
     # compute features for a list of images in a file
-    compute_image_list_features(feature_extractor, IMAGE_LIST_FILE, BATCH_SIZE, OUTPUT_FILE)
+    compute_image_list_features_from_path(feature_extractor, IMAGE_LIST_FILE, BATCH_SIZE, OUTPUT_FILE)
     # compute features for a single image
     # feature_extractor.set_image_batch_size(1)
     # compute_single_image_feature(feature_extractor, IMAGE_PATH, OUTPUT_FILE)
