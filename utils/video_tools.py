@@ -11,11 +11,16 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms, pace)
         # Set video to start position
         cap.set(cv2.CAP_PROP_POS_MSEC, start_time_ms)
 
+        fps = cap.get(cv2.CAP_PROP_FPS)
+
         # If stop_time_ms == 0, get the entire video
         if stop_time_ms == 0:
-            fps = cap.get(cv2.CAP_PROP_FPS)
             frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             stop_time_ms = int(frame_count/fps)*1000
+
+        # If pace == 0, get 1 image every FPS/10
+        if pace == 0:
+            pace = int(1000/(fps/10))
 
         frames_list = []
         ok = True
@@ -29,7 +34,6 @@ def get_video_frames(video_path, frames_path, start_time_ms, stop_time_ms, pace)
             cv2.imwrite(frame_path, frame)
             frames_list.append(frame_path)
             current_frame += 1
-            # FPS = 1
             cap.set(cv2.CAP_PROP_POS_MSEC, cap.get(cv2.CAP_PROP_POS_MSEC) + pace)
 
         cap.release()

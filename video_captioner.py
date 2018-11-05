@@ -26,10 +26,10 @@ def download_yt_video(url, video_folder, video_name):
 
 def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
          video_name='civic',
-         start_time=457,
-         stop_time=467,
-         pace=1000,
-         batch_size=10):
+         start_time=0,
+         stop_time=0,
+         pace=0,
+         batch_size=0):
     video_folder = './utils/videos/{}'.format(video_name)
     if not os.path.exists('./utils/videos'):
         os.makedirs('./utils/videos')
@@ -39,6 +39,13 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
     if ok:
         ok, frames_list = get_video_frames(video_path, video_folder, start_time*1000, stop_time*1000, pace)
         if ok:
+            # If batch_size == 0, use length of frame_list
+            if batch_size == 0:
+                batch_size = len(frames_list)
+                if batch_size > 50:
+                    log.error('batch_size is too high!')
+                    return False
+
             features_file = '{}/output_{}.csv'.format(video_folder, video_name)
             if extractor('utils/data/VGG_ILSVRC_16_layers.caffemodel',
                          'utils/data/vgg_orig_16layer.deploy.prototxt',
@@ -48,7 +55,7 @@ def main(url='https://www.youtube.com/watch?v=GwowU444Ky8',
                 model_name = 's2vt_vgg_rgb'
                 output_path = '{}/{}_captions'.format(video_folder, video_name)
                 get_captions(model_name, features_file, output_path)
-    return
+    return True
 
 
 if __name__ == "__main__":
